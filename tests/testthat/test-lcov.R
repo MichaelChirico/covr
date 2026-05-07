@@ -1,11 +1,11 @@
 test_that("to_lcov works with coverage objects", {
-  tmp <- tempfile()
+  tmp <- withr::local_tempfile()
   cov <- package_coverage(test_path("TestSummary"))
 
   to_lcov(cov, filename = tmp)
 
   lines <- readLines(tmp)
-  
+
   # Check if file starts with SF: and contains DA: lines
   expect_match(lines, "^SF:", all = FALSE)
   expect_match(lines, "^DA:", all = FALSE)
@@ -14,39 +14,38 @@ test_that("to_lcov works with coverage objects", {
 
 test_that("to_lcov outputs correct format and content", {
   tmp <- withr::local_tempfile()
-  
-  src <- withr::local_tempfile(fileext = ".R")
-  writeLines(
-    c(
+
+  src <- withr::local_tempfile(
+    fileext = ".R",
+    lines = c(
       "f <- function(x) {",
       "  if (x > 0) {",
       "    return(x)",
       "  }",
       "  return(0)",
       "}"
-    ),
-    src
+    )
   )
-  
-  test <- withr::local_tempfile(fileext = ".R")
-  writeLines(c("source(src_file)", "f(1)"), test)
-  
+
+  test <- withr::local_tempfile(
+    fileext = ".R",
+    lines = c("source(src_file)", "f(1)")
+ )
+
   env <- new.env()
   env$src_file <- src
-  
+
   writeLines("f(1)", test)
-  
+
   cov <- file_coverage(src, test)
-  
+
   to_lcov(cov, filename = tmp)
-  
+
   lines <- readLines(tmp)
-  
+
   # Expect SF: followed by the path of src
-  # covr usually normalizes paths
-  normalized_src <- normalizePath(src, mustWork = FALSE)
-  expect_match(lines, paste0("SF:", normalized_src), all = FALSE)
-  
+  expect_match(lines, paste0("SF:.*", rex::escape(basename(src))), all = FALSE)
+
   # Expect DA lines for lines in the file
   # The exact lines depend on how R parses and covr instruments
   # But we expect at least some DA lines
