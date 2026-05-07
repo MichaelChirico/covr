@@ -50,7 +50,7 @@ test_that("to_lcov outputs correct format and content", {
   # The exact lines depend on how R parses and covr instruments
   # But we expect at least some DA lines
   expect_match(lines, "^DA:", all = FALSE)
-  
+
   # Verify end of record
   expect_true(any(lines == "end_of_record"))
 })
