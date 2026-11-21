@@ -1,9 +1,10 @@
 pandoc: 3.8.3
-pkgdown: 2.2.0
+pkgdown: 2.2.1
 pkgdown_sha: ~
 articles:
   how_it_works: how_it_works.html
-last_built: 2026-05-07T18:43Z
+  shiny: shiny.html
+last_built: 2026-11-21T00:23Z
 urls:
   reference: https://covr.r-lib.org/reference
   article: https://covr.r-lib.org/articles
